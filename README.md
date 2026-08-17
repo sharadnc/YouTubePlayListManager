@@ -1,5 +1,7 @@
 # YouTube Playlist Manager (YTPM)
 
+<img width="1280" height="1020" alt="Screenshot_1" src="https://github.com/user-attachments/assets/c475645c-f250-4542-9b10-4f112cfc3058" />
+
 Desktop app and CLI to manage **your** YouTube playlists through the official YouTube Data API v3. Sparse writes: titles, duplicates, and positions are updated only when they actually change.
 
 ## Setup
