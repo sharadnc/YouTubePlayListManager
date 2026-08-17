@@ -1,0 +1,63 @@
+# Secrets and OAuth (never commit)
+.env
+.env.*
+!.env.example
+token.json
+credentials.json
+client_secrets.json
+*.pem
+*.p12
+
+# Local GUI / quota / job state
+gui_settings.json
+quota_ledger.json
+sort_queue.json
+gui_crash.log
+gui_out.log
+gui_err.log
+
+# Runtime data (keep empty dirs in repo)
+list_mode/**
+!list_mode/.gitkeep
+exports/**
+!exports/.gitkeep
+
+# Local captures that may include playlist/video ids
+docs/Screenshot*.png
+
+# Python
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Packaging
+dist/
+build/
+release/
+*.spec.bak
+warn-*.txt
+
+# Logs / OS / IDE / Google Drive
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+[Dd]esktop.ini
+.vscode/
+.idea/
+.cursor/
+.specstory/
+.cursorindexingignore

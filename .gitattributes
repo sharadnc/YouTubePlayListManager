@@ -1,0 +1,35 @@
+# PURPOSE:
+#   Normalize line endings so Windows and Unix clones stay consistent.
+# INTERNAL LOGIC:
+#   text=auto detects text files; Python/docs use LF; cmd launchers use CRLF;
+#   binaries stay binary.
+# EXAMPLE:
+#   git add .gitattributes  →  checkouts follow these rules.
+
+* text=auto
+
+*.py text eol=lf
+*.pyw text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+*.txt text eol=lf
+*.json text eol=lf
+*.ini text eol=lf
+*.toml text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.spec text eol=lf
+*.gitignore text eol=lf
+*.gitattributes text eol=lf
+
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.vbs text eol=crlf
+
+*.ico binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.exe binary

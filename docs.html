@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="YouTube Playlist Manager (YTPM) tutorials, button reference, and YouTube Data API quota guidance from Isha Analytiks LLC.">
+  <title>YTPM Tutorials / Help — YouTube Playlist Manager</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231F538D'/%3E%3Ccircle cx='16' cy='20' r='4' fill='%23E6F2FF'/%3E%3Crect x='24' y='17' width='22' height='6' rx='3' fill='%23DCEBFF'/%3E%3Ccircle cx='16' cy='32' r='4' fill='%23E6F2FF'/%3E%3Crect x='24' y='29' width='22' height='6' rx='3' fill='%23DCEBFF'/%3E%3Ccircle cx='16' cy='44' r='4' fill='%23E6F2FF'/%3E%3Crect x='24' y='41' width='22' height='6' rx='3' fill='%23DCEBFF'/%3E%3Cpolygon points='50,20 50,44 62,32' fill='%23F4FBFF'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --navy: #07111f;
+      --ink: #0b1f3a;
+      --royal: #1f538d;
+      --azure: #3498db;
+      --sky: #7ec8f3;
+      --ice: #e8f4fc;
+      --card: #10243d;
+      --line: rgba(126, 200, 243, 0.18);
+      --text: #eaf4fc;
+      --muted: #9bb6ce;
+      --warn: #f0c36d;
+      --ok: #3dd6a5;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(52, 152, 219, 0.22), transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, rgba(31, 83, 141, 0.35), transparent 50%),
+        var(--navy);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    a { color: var(--sky); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    header.top {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: rgba(7, 17, 31, 0.82);
+      border-bottom: 1px solid var(--line);
+    }
+    .top-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 14px 0;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .brand svg { width: 44px; height: 44px; display: block; }
+    .brand-name { font-weight: 700; letter-spacing: 0.02em; }
+    .brand-name small {
+      display: block;
+      font-weight: 500;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    nav { display: flex; flex-wrap: wrap; gap: 16px; font-size: 14px; }
+    nav a { color: var(--ice); }
+    .hero {
+      padding: 64px 0 36px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 36px;
+      align-items: center;
+    }
+    .kicker {
+      color: var(--sky);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin: 0 0 10px;
+    }
+    h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      line-height: 1.12;
+      margin: 0 0 16px;
+    }
+    .lede { font-size: 18px; color: var(--ice); margin: 0 0 22px; max-width: 640px; }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill {
+      border: 1px solid var(--line);
+      background: rgba(31, 83, 141, 0.35);
+      color: var(--ice);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+    .hero-card {
+      background: linear-gradient(180deg, rgba(52, 152, 219, 0.18), rgba(16, 36, 61, 0.9));
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+    }
+    .hero-card h2 { margin: 0 0 12px; font-size: 18px; }
+    .hero-card dl { margin: 0; display: grid; grid-template-columns: 110px 1fr; gap: 8px 12px; font-size: 14px; }
+    .hero-card dt { color: var(--muted); }
+    section { padding: 28px 0 8px; }
+    h2 {
+      font-size: 28px;
+      margin: 0 0 12px;
+      padding-top: 12px;
+    }
+    h3 { margin: 22px 0 8px; font-size: 18px; color: var(--sky); }
+    p { color: var(--ice); }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .feature, .note, .limit-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .feature h3 { margin: 0 0 8px; color: var(--text); }
+    .feature p { margin: 0; font-size: 14px; }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--card);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 860px; }
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+    th {
+      background: #163a66;
+      color: #fff;
+      position: sticky;
+      top: 0;
+      font-weight: 650;
+    }
+    tr:last-child td { border-bottom: 0; }
+    td:first-child { color: #fff; font-weight: 650; white-space: nowrap; }
+    .cost { color: var(--sky); }
+    .links {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 16px 0 8px;
+    }
+    .links a {
+      display: block;
+      background: linear-gradient(180deg, #1f538d, #163a66);
+      color: #fff;
+      border-radius: 14px;
+      padding: 18px;
+      text-decoration: none;
+      border: 1px solid rgba(126, 200, 243, 0.25);
+    }
+    .links a:hover { filter: brightness(1.08); text-decoration: none; }
+    .links small { display: block; color: var(--ice); opacity: 0.85; margin-top: 6px; font-size: 13px; }
+    ul.notes { padding-left: 18px; }
+    ul.notes li { margin: 8px 0; }
+    footer {
+      margin-top: 48px;
+      border-top: 1px solid var(--line);
+      padding: 28px 0 40px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 20px;
+      align-items: center;
+    }
+    .footer-grid strong { color: var(--text); }
+    @media (max-width: 900px) {
+      .hero, .features, .links, .footer-grid { grid-template-columns: 1fr; }
+      nav { display: none; }
+    }
+    @media print {
+      header.top { position: static; backdrop-filter: none; }
+      nav { display: none; }
+      body {
+        background: #07111f;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .table-wrap { overflow: visible; }
+      table { min-width: 0; }
+      a { text-decoration: none; }
+      .wrap { width: 100%; margin: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-inner">
+      <a class="brand" href="#top">
+        <svg viewBox="0 0 512 512" aria-hidden="true">
+          <defs>
+            <linearGradient id="ytpmg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0B1F3A"/>
+              <stop offset="55%" stop-color="#1F538D"/>
+              <stop offset="100%" stop-color="#3498DB"/>
+            </linearGradient>
+          </defs>
+          <rect width="512" height="512" rx="92" fill="url(#ytpmg)"/>
+          <circle cx="118" cy="168" r="22" fill="#E6F2FF"/>
+          <rect x="156" y="148" width="190" height="40" rx="20" fill="#DCEBFF"/>
+          <circle cx="118" cy="256" r="22" fill="#E6F2FF"/>
+          <rect x="156" y="236" width="190" height="40" rx="20" fill="#DCEBFF"/>
+          <circle cx="118" cy="344" r="22" fill="#E6F2FF"/>
+          <rect x="156" y="324" width="190" height="40" rx="20" fill="#DCEBFF"/>
+          <polygon points="390,168 390,344 478,256" fill="#F4FBFF"/>
+        </svg>
+        <span class="brand-name">YTPM<small>YouTube Playlist Manager</small></span>
+      </a>
+      <nav>
+        <a href="#purpose">Purpose</a>
+        <a href="#install">Install</a>
+        <a href="#features">Features</a>
+        <a href="#buttons">Buttons</a>
+        <a href="#cli">CLI</a>
+        <a href="#quota">API quota</a>
+        <a href="#author">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="top">
+    <section class="hero">
+      <div>
+        <p class="kicker">Isha Analytiks LLC · Desktop product guide</p>
+        <h1>Command your YouTube playlists with precision — and spend quota only when something actually changes.</h1>
+        <p class="lede">YouTube Playlist Manager (YTPM) is a desktop workspace for owners who maintain large, private, and unlisted playlists. Connect a Google account once, then create, clean, sort, move, and archive lists without fighting YouTube Studio’s limits. On Windows you can unzip a packaged build — no Python on the user PC.</p>
+        <div class="pills">
+          <span class="pill">OAuth desktop app</span>
+          <span class="pill">YouTube Data API v3</span>
+          <span class="pill">Sparse writes</span>
+          <span class="pill">Dry-run</span>
+          <span class="pill">Local cache</span>
+          <span class="pill">10,000 unit daily pool</span>
+          <span class="pill">Windows zip</span>
+        </div>
+      </div>
+      <aside class="hero-card">
+        <h2>Product snapshot</h2>
+        <dl>
+          <dt>Product</dt><dd>YouTube Playlist Manager (YTPM)</dd>
+          <dt>Publisher</dt><dd>Isha Analytiks LLC</dd>
+          <dt>Audience</dt><dd>Channel owners managing their own playlists</dd>
+          <dt>Auth</dt><dd>Google OAuth · scope youtube.force-ssl</dd>
+          <dt>Quota</dt><dd>Reads ≈ 1 unit · writes = 50 units each</dd>
+        </dl>
+      </aside>
+    </section>
+
+    <section id="purpose">
+      <h2>Purpose</h2>
+      <p>YTPM exists because YouTube Studio is slow for bulk playlist work: alphabetical order, duplicate titles after extra spaces, broken rows, renaming videos you uploaded, and moving videos across many lists. The app talks to <strong>your</strong> channel through the official YouTube Data API. It never needs a second Google Cloud project to “multiply” quota, and it never empties a playlist as a sort strategy.</p>
+      <p>Every expensive action is designed to be <strong>sparse</strong>: update a title only if consecutive spaces are still there (or you explicitly rename), delete a row only if it is a duplicate, and rewrite a position only if the item is not already in the right slot. An already-clean, already-sorted playlist costs <strong>zero write quota</strong>. Sort, Clear, and List Mode Apply can <strong>dry-run</strong> first (0 write units). The sidebar quota meter is a local ledger — Google does not expose remaining Data API quota.</p>
+    </section>
+
+    <section id="install">
+      <h2>Install (Windows)</h2>
+      <p>Use a Python venv from this repo, or unzip a packaged folder. Client ID and Secret live in <code>.env</code>. After Connect Google Account, <code>token.json</code> is written next to the app — do not share it.</p>
+      <div class="features">
+        <article class="feature"><h3>From source</h3><p>Set <code>YTPM_VENV</code> in <code>.env</code>. Prefer <code>Run_YTPM.vbs</code> (no CMD window). Missing packages install on startup. CLI: <code>Run_YTPM_CLI.bat</code>.</p></article>
+        <article class="feature"><h3>Packaged zip</h3><p>Keep <code>YTPM.exe</code> next to <code>_internal</code>. Put Client ID/Secret in <code>.env</code> beside the exe (the exe ignores <code>YTPM_VENV</code>). Double-click, then Connect Google Account. Each person signs in with their own Google account.</p></article>
+        <article class="feature"><h3>Layout on first launch</h3><p>Playlists and Videos each get <strong>50%</strong> of the main pane. Drag the split; closing the app saves window size, split, filters, and last playlist for next time.</p></article>
+      </div>
+    </section>
+
+    <section id="features">
+      <h2>Features</h2>
+      <div class="features">
+        <article class="feature"><h3>Account gate</h3><p>Connect Google Account on first launch. Token stays local. Reconnect when you switch accounts. TLS uses the OS certificate store on Windows. A second launch focuses the existing window. Source launchers read <code>YTPM_VENV</code> from <code>.env</code> and install missing packages. Packaged <code>YTPM.exe</code> ignores the venv — put <code>.env</code> next to the exe.</p></article>
+        <article class="feature"><h3>Playlist command center</h3><p>Create, rename, description, privacy, delete, and clear lists. Filter as you type (remembered). Right-click rows. Delete requires a checkbox that the wipe cannot be undone. F2 / Del / Ctrl+F / Enter shortcuts.</p></article>
+        <article class="feature"><h3>Intelligent sort</h3><p>Sort by Title, Date Added, Duration, or Channel. The sidebar queue shows playlist, key, and pending/done — drop or reorder jobs, then resume after Pacific midnight.</p></article>
+        <article class="feature"><h3>Hygiene</h3><p>Trim duplicate video ids. Find rows YouTube labeled deleted or inaccessible. Remove selected videos from this playlist without deleting them on YouTube.</p></article>
+        <article class="feature"><h3>List Mode</h3><p>Export selected playlists to a text file, edit offline, apply the diff when quota allows (or dry-run with 0 writes). Undo picks among the last 20 snapshots.</p></article>
+        <article class="feature"><h3>Library tools</h3><p>Rename titles on videos you uploaded. Searchable copy/move destination. Each write is logged (id, method, units) next to the local quota meter. First launch: playlists/videos 50/50; your split, window size, and filters are saved on exit.</p></article>
+      </div>
+    </section>
+
+    <section id="buttons">
+      <h2>Button reference</h2>
+      <!-- BEGIN:GUI_BUTTONS -->
+<p>Costs assume <strong>one playlist of 50 videos</strong>, YouTube Data API v3, and the default <strong>10,000 units/day</strong> pool (resets midnight US Pacific). The sidebar quota meter is a <strong>local estimate</strong> (Google does not expose remaining Data API quota).</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Method</th><th>Units</th></tr>
+</thead>
+<tbody>
+<tr><td><code>playlists.list</code>, <code>playlistItems.list</code>, <code>videos.list</code>, <code>channels.list</code></td><td class="cost">1 per request (50 results/page)</td></tr>
+<tr><td><code>playlists.insert</code> / <code>update</code> / <code>delete</code></td><td class="cost">50</td></tr>
+<tr><td><code>playlistItems.insert</code> / <code>update</code> / <code>delete</code></td><td class="cost">50</td></tr>
+<tr><td><code>videos.update</code></td><td class="cost">50</td></tr>
+</tbody>
+</table>
+</div>
+<p>Reads are cheap. Writes are <strong>50 units each</strong>. OAuth sign-in is <strong>not</strong> billed against this quota.</p>
+<p>After several actions the app also <strong>Refresh</strong>es (listed separately below). Those extra units are included in the Cost column when the button always refreshes.</p>
+<p><strong>Dry run</strong> (Sort / Clear / List Mode Apply): Yes = apply, No = dry run (writes the list-mode file, <strong>0 write quota</strong>), Cancel = abort.</p>
+<p>Rename Playlist, Rename title, and Delete Playlist open with the <strong>current name already in the box</strong>. Ok with the same playlist/video title skips the write.</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Button</th><th>Purpose</th><th>Functionality</th><th>YouTube API Costs (50-video playlist)</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Connect Google Account</strong> (sidebar and startup banner)</td><td>Sign in so the app can read and edit your playlists.</td><td>Opens the Google OAuth browser flow, stores a local token, then loads playlists. Same action as the banner button.</td><td class="cost"><strong>0 Data API units</strong> for OAuth. After success it runs Refresh (~see Refresh).</td></tr>
+<tr><td><strong>Reconnect / Switch Account</strong></td><td>Change Google account or force a new consent screen.</td><td>Clears the cached token, runs OAuth again, then loads playlists.</td><td class="cost"><strong>0 Data API units</strong> for OAuth. After success it runs Refresh.</td></tr>
+<tr><td><strong>Quota meter</strong> (sidebar label)</td><td>Show ~units left today.</td><td>Reads local <code>quota_ledger.json</code> (Pacific date). Not a Google API field. Each <strong>write</strong> is also logged as <code>WRITE method id=… units=50</code> so you can match Google Cloud’s quota graph.</td><td class="cost"><strong>0 units</strong>.</td></tr>
+<tr><td><strong>Sort queue</strong> (sidebar table)</td><td>See pending/done sort jobs; drop or reorder.</td><td>Playlist title, sort key, status. <strong>Drop</strong> removes a job. <strong>Up/Down</strong> change run order. Resume unfinished sorts still runs pending jobs in this order.</td><td class="cost"><strong>0 units</strong> (local).</td></tr>
+<tr><td><strong>Refresh</strong></td><td>Reload the playlist list from YouTube and drop the local video cache.</td><td>Calls <code>playlists.list</code> (paginated). Selecting a playlist then loads its videos (<code>playlistItems.list</code> + <code>videos.list</code>) unless a cache hit.</td><td class="cost">Playlists: <strong>1 unit per 50 playlists</strong> you own. Loading the 50-video playlist: <strong>~2 units</strong>. Typical total <strong>~3 units</strong>. Cache hit when switching playlists: <strong>0</strong>.</td></tr>
+<tr><td><strong>Filter playlists…</strong> (table search)</td><td>Find year-named lists without scrolling.</td><td>Filters the playlists table by title or id as you type. Ctrl/Shift multi-select is kept for rows that stay visible.</td><td class="cost"><strong>0 units</strong> (local).</td></tr>
+<tr><td><strong>Filter videos…</strong> (table search)</td><td>Find a video in the current playlist.</td><td>Filters the videos table by title, channel, or video id as you type.</td><td class="cost"><strong>0 units</strong> (local).</td></tr>
+<tr><td><strong>New Playlist</strong></td><td>Create an empty playlist.</td><td>Prompts for a title (empty box); <code>playlists.insert</code> (private); then Refresh.</td><td class="cost"><strong>50</strong> to create + Refresh (<strong>~3</strong>). Total <strong>~53</strong>. Independent of video count (new list is empty).</td></tr>
+<tr><td><strong>Rename</strong></td><td>Change the selected playlist’s title.</td><td>Box is pre-filled. <code>playlists.list</code> then <code>playlists.update</code>; then Refresh. Same title: no write. <strong>F2</strong> on the playlists table.</td><td class="cost"><strong>1 + 50</strong> + Refresh <strong>~3</strong>. Total <strong>~54</strong>. Unchanged name: <strong>0</strong>.</td></tr>
+<tr><td><strong>Description…</strong></td><td>Edit the playlist description.</td><td>Pre-filled text box. <code>playlists.update</code> (keeps title and privacy). Unchanged text: list only.</td><td class="cost"><strong>1</strong> if unchanged; <strong>1 + 50</strong> if saved.</td></tr>
+<tr><td><strong>Privacy</strong></td><td>Set public / unlisted / private.</td><td>One <code>playlists.update</code> on the focused playlist.</td><td class="cost"><strong>50</strong>.</td></tr>
+<tr><td><strong>Delete Playlist</strong></td><td>Permanently delete the selected playlist.</td><td>Box is pre-filled. Ok requires the checkbox <strong>I understand this cannot be undone</strong> and a matching title. One <code>playlists.delete</code> (videos stay on YouTube); then Refresh.</td><td class="cost"><strong>50</strong> + Refresh <strong>~3</strong>. Total <strong>~53</strong>. Does <strong>not</strong> cost 50×50 to remove items.</td></tr>
+<tr><td><strong>Clear Videos</strong></td><td>Empty every <strong>selected</strong> playlist but keep the playlists.</td><td>Quota confirm + dry run. Snapshots for Undo, then <code>playlistItems.delete</code> on every row.</td><td class="cost"><strong>1</strong> (list) + <strong>50 × 50 deletes = 2,500</strong> per playlist. Dry run: list + snapshot file, <strong>0 writes</strong>.</td></tr>
+<tr><td><strong>Trim Duplicates</strong></td><td>Keep the first copy of each video id; remove later repeats.</td><td>Lists items, deletes duplicate playlist rows only. Applies to every <strong>selected</strong> playlist.</td><td class="cost">Reads: <strong>~1–2</strong> + <strong>1</strong> (items). Writes: <strong>50 × (number of duplicate rows)</strong>. No duplicates: <strong>~3</strong>.</td></tr>
+<tr><td><strong>Sort by Title</strong></td><td>A–Z after collapsing extra spaces in titles you own and removing duplicates.</td><td>Queued sparse sort (see Notes). Dry run writes list-mode with 0 writes. Per-item progress. Studio <strong>Sort → Manual</strong> for in-place moves; otherwise a <strong>new</strong> sorted copy.</td><td class="cost"><strong>Best (already A–Z, clean):</strong> <strong>0 writes</strong> + <strong>~2–4 reads</strong>. <strong>Typical:</strong> <strong>50 × (collapsed titles + deleted dupes + moved items)</strong>. <strong>Copy fallback:</strong> <strong>~2,550</strong> plus any title/dupe writes.</td></tr>
+<tr><td><strong>Sort by Date Added</strong></td><td>Oldest-first by date added, after the same cleanup as Sort by Title.</td><td>Same sparse writes. Duplicate rows keep the <strong>oldest</strong> copy. Copy fallback if Sort is not Manual. A later sort on the same playlist <strong>replaces</strong> the queued key (Title → Date).</td><td class="cost">Same write rules as Sort by Title.</td></tr>
+<tr><td><strong>Sort by Duration</strong></td><td>Shortest-first (same 50-unit position writes).</td><td>Enriches durations (<code>videos.list</code>), then the same sparse move/dedupe path. Still needs Studio <strong>Sort → Manual</strong>.</td><td class="cost">Enrich <strong>~1</strong> extra read + same write rules as Sort by Title.</td></tr>
+<tr><td><strong>Sort by Channel</strong></td><td>Channel name A–Z (same 50-unit position writes).</td><td>Enriches channel titles, then sparse moves. Still needs Studio <strong>Sort → Manual</strong>.</td><td class="cost">Enrich <strong>~1</strong> extra read + same write rules as Sort by Title.</td></tr>
+<tr><td><strong>Resume unfinished sorts</strong></td><td>Continue the sort job queue after quota runs out.</td><td>List Mode already saved intended order. Stops when local remaining units &lt; 50. Resume after Pacific midnight.</td><td class="cost">Same as the remaining sort writes. <strong>0</strong> if the queue is empty.</td></tr>
+<tr><td><strong>Undo…</strong></td><td>Restore the focused playlist from a chosen list-mode snapshot.</td><td>Picker lists the last 20 snapshots (newest first). Applies that file (same writes as List Mode Apply).</td><td class="cost">Same as List Mode Apply for that playlist.</td></tr>
+<tr><td><strong>List Mode: Export selected</strong></td><td>Save <strong>selected</strong> playlists as tab-separated text files.</td><td><code>playlistItems.list</code> for each selected playlist only (not every playlist you own).</td><td class="cost"><strong>~1 per selected playlist</strong> (50 videos = 1 page). <strong>0 writes</strong>.</td></tr>
+<tr><td><strong>List Mode: Apply</strong></td><td>Push edits from those text files back to YouTube.</td><td>Quota confirm + dry run. Diffs each file, then deletes/inserts/moves.</td><td class="cost">Per 50-video file: <strong>~2 lists</strong>. Writes: <strong>50 × (deletes + inserts + moved items)</strong>. Dry run: reads only.</td></tr>
+<tr><td><strong>Export JSON</strong></td><td>Snapshot every <strong>selected</strong> playlist to JSON.</td><td>Lists items, <code>videos.list</code> for metadata, writes under the export folder.</td><td class="cost"><strong>~2 units</strong> per selected playlist. <strong>0 writes</strong>.</td></tr>
+<tr><td><strong>Find Broken</strong></td><td>Find deleted / private-unavailable rows in every <strong>selected</strong> playlist.</td><td>Lists items, enriches, reports placeholder titles. Optionally removes those playlist rows.</td><td class="cost">Scan: <strong>~2 units</strong> per playlist. Removing *B* rows: <strong>+50 × B</strong>.</td></tr>
+<tr><td><strong>Stats</strong></td><td>Duration totals and unique channels for every <strong>selected</strong> playlist.</td><td>Lists items, <code>videos.list</code> for durations, combined dialog.</td><td class="cost"><strong>~2 units</strong> per selected playlist. <strong>0 writes</strong>.</td></tr>
+<tr><td><strong>Tutorials / Help</strong></td><td>Open this product guide in the browser.</td><td>Opens local <code>docs.html</code> (no YouTube API). Available even when not connected.</td><td class="cost"><strong>0 units</strong>.</td></tr>
+<tr><td><strong>Open in Browser</strong></td><td>Watch the selected video on YouTube.</td><td>Opens <code>https://www.youtube.com/watch?v=…</code> for the first selected row. Double-click / <code>o</code> key.</td><td class="cost"><strong>0 units</strong>.</td></tr>
+<tr><td><strong>Open in Studio</strong></td><td>Open the focused playlist in YouTube Studio.</td><td><code>https://studio.youtube.com/playlist/{id}/videos</code> (set <strong>Sort → Manual</strong> here). <strong>Enter</strong> on a playlist or video row.</td><td class="cost"><strong>0 units</strong>.</td></tr>
+<tr><td><strong>Rename title…</strong></td><td>Change the YouTube title of a selected video you uploaded.</td><td>Box is pre-filled. <code>videos.update</code>. Not a playlist-only nickname — the title changes everywhere. Other channels are rejected. Same title: no write. <strong>F2</strong> on the videos table.</td><td class="cost"><strong>1</strong> (<code>videos.list</code>) + <strong>50</strong> write. Already the same title: <strong>0 writes</strong>.</td></tr>
+<tr><td><strong>Remove</strong></td><td>Remove selected videos from <strong>this</strong> playlist.</td><td>Confirms, <code>playlistItems.delete</code> for each selected playlist item (videos stay on YouTube), reloads. <strong>Del</strong> on the videos table.</td><td class="cost"><strong>50 × (selected rows)</strong> + reload <strong>~2</strong>.</td></tr>
+<tr><td><strong>Copy…</strong></td><td>Copy selected videos onto another playlist (skips ids already there).</td><td>Searchable destination picker (filter as you type; IDs shown so duplicate titles cannot collide). Destination cache is dropped so the dest list is fresh next time you open it.</td><td class="cost">Destination list: <strong>1</strong>. Writes: <strong>50 × (videos actually copied)</strong>.</td></tr>
+<tr><td><strong>Move…</strong></td><td>Move selected videos from this playlist to another.</td><td>Same searchable picker; insert into dest then delete from source; reloads source.</td><td class="cost"><strong>100 × (moved videos)</strong> + reload <strong>~2</strong>.</td></tr>
+</tbody>
+</table>
+</div>
+<h3>Notes</h3>
+<ul class="notes">
+<li><strong>Selecting a playlist</strong> in the left table costs <strong>~2 units</strong> the first time (<code>playlistItems.list</code> + <code>videos.list</code>). Switching back uses the <strong>local item cache</strong> (<strong>0 units</strong>) until Refresh or a mutation.</li>
+<li><strong>Column headers</strong> (Title, Items, Duration, …) sort the table <strong>locally</strong> only: <strong>0 units</strong>. On startup, Refresh, and after a filter rebuild, Playlists default to <strong>Title ▲</strong> and Videos to <strong># ▲</strong>. Click another heading to change it until the next rebuild.</li>
+<li><strong>Multi-select playlists</strong> (Ctrl/Shift): Trim, Sort, Clear, Find Broken, Export JSON, Stats, and List Mode Export selected all run on <strong>every selected playlist</strong>.</li>
+<li><strong>Sort by Title / Date / Duration / Channel</strong> share the same sparse writes:</li>
+<li><strong>Titles:</strong> <code>videos.update</code> only if the title still has extra spaces <strong>and</strong> you own the video.</li>
+<li><strong>Duplicates:</strong> <code>playlistItems.delete</code> only when a duplicate is found (same video id, or same title after space-collapse). Placeholder titles (<code>Deleted video</code> / <code>Private video</code>) are <strong>not</strong> merged with each other. Date sort keeps the <strong>oldest</strong> copy.</li>
+<li><strong>Order:</strong> <code>playlistItems.update</code> only for items that are not already in the right slot. Already-sorted playlists cost <strong>0 write quota</strong>.</li>
+<li>Set Studio <strong>Sort → Manual</strong> (Open in Studio) before sorting so the app can patch positions in place. Otherwise it spends copy-fallback quota (<strong>~2,550</strong> for 50 videos) and does not reorder the original.</li>
+<li>There is no cheaper official reorder method. <strong>10,000 units/day ÷ 50 = 200 writes</strong>. Do not use unofficial YouTube web APIs to dodge quota.</li>
+<li><strong>Keyboard:</strong> <strong>F2</strong> rename (playlist or video title, last-clicked table), <strong>Del</strong> remove selected videos, <strong>Ctrl+F</strong> focus the videos filter, <strong>Enter</strong> open the playlist in Studio. Right-click a row for rename, privacy, copy/move, and Studio.</li>
+<li>Window size, the playlist/videos split, both filter boxes, and the last playlist are remembered in <code>gui_settings.json</code> (saved when you close the app). <strong>First launch</strong> (or a missing/invalid split): Playlists and Videos each get <strong>50%</strong> height. After you drag the divider, the ratio (<code>sash_frac</code>) is restored on the next start. A second <code>Run_YTPM.vbs</code> / <code>YTPM.exe</code> focuses the existing window instead of stacking another.</li>
+<li>Launch: Prefer <strong><code>Run_YTPM.vbs</code></strong> (no CMD window). It reads <code>YTPM_VENV</code> from <code>.env</code>, runs <code>ytpm_launch.pyw</code> under <code>pythonw</code>, and installs missing packages via <code>ensure_deps</code> (pip uses CREATE_NO_WINDOW). <code>Run_YTPM.bat</code> delegates to the <code>.vbs</code>. CLI/Build still use <code>ytpm_resolve_venv.bat</code>. Packaged <strong>YTPM.exe</strong> ignores <code>YTPM_VENV</code> — put <code>.env</code> next to the exe. Team zip: <code>Build_YTPM.bat --zip</code> (see <code>docs/distribute.md</code>).</li>
+<li>CLI (same ops as the GUI): <code>ytpm sort PLAYLIST --by title</code> (or date, duration, channel) with optional <code>--dry-run</code> / <code>--reverse</code>; <code>ytpm sort --resume</code>; <code>ytpm items rename VIDEO_ID &quot;New title&quot;</code>; <code>ytpm playlists description PLAYLIST &quot;Text&quot;</code>; <code>ytpm list export [ids…]</code>; <code>ytpm list apply [--dry-run]</code>; <code>ytpm playlists privacy PLAYLIST public</code>; <code>ytpm stats PLAYLIST</code>; <code>ytpm version</code>. See the CLI section (<code>docs/cli.md</code>).</li>
+</ul>
+<!-- END:GUI_BUTTONS -->
+    </section>
+
+    <section id="cli">
+      <h2>CLI</h2>
+      <!-- BEGIN:CLI -->
+<p>Same YouTube Data API v3 operations as the GUI. Prefer <code>Run_YTPM_CLI.bat</code> (reads <code>YTPM_VENV</code> from <code>.env</code> and runs <code>ensure_deps.py</code> first). Or use <code>python -m ytpm</code> from that same venv. Global flag: <code>-v</code> / <code>--verbose</code> (debug logging).</p>
+<h3>Auth and GUI</h3>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Command</th><th>What it does</th></tr>
+</thead>
+<tbody>
+<tr><td><code>ytpm auth</code></td><td>Google OAuth browser consent. <code>--force</code> reconnects / switches account.</td></tr>
+<tr><td><code>ytpm auth --force</code></td><td>Clears the token and re-consents.</td></tr>
+<tr><td><code>ytpm gui</code></td><td>Launches <code>ytpm_gui.py</code>.</td></tr>
+<tr><td><code>ytpm version</code></td><td>Prints the package version (also used in <code>release\YTPM-&lt;version&gt;-windows.zip</code>).</td></tr>
+</tbody>
+</table>
+</div>
+<p>OAuth is <strong>0 Data API units</strong>. Writes after that follow the same 50-unit costs as the GUI.</p>
+<h3>Playlists</h3>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Command</th><th>What it does</th></tr>
+</thead>
+<tbody>
+<tr><td><code>ytpm playlists</code></td><td>List owned playlists.</td></tr>
+<tr><td><code>ytpm playlists create &quot;Title&quot;</code></td><td>Create a private playlist (<strong>50</strong>).</td></tr>
+<tr><td><code>ytpm playlists rename PLAYLIST &quot;New title&quot;</code></td><td>Rename (<strong>1 + 50</strong>).</td></tr>
+<tr><td><code>ytpm playlists privacy PLAYLIST public</code></td><td>One <code>playlists.update</code> (<strong>50</strong>). Also <code>unlisted</code> or <code>private</code>.</td></tr>
+<tr><td><code>ytpm playlists description PLAYLIST &quot;Text&quot;</code></td><td>Update description (<strong>1</strong> if unchanged, else <strong>1 + 50</strong>).</td></tr>
+<tr><td><code>ytpm playlists delete PLAYLIST</code></td><td>Type-to-confirm delete, or <code>--yes --confirm-name &quot;Title&quot;</code> (<strong>50</strong>).</td></tr>
+<tr><td><code>ytpm playlists clear PLAYLIST</code></td><td>Remove all items. <code>--dry-run</code> snapshots only (<strong>0 writes</strong>). <code>--yes</code> skips the prompt.</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>PLAYLIST</code> may be a playlist id or an exact title.</p>
+<h3>Items</h3>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Command</th><th>What it does</th></tr>
+</thead>
+<tbody>
+<tr><td><code>ytpm items add PLAYLIST VIDEO_ID</code></td><td>Insert one video (<strong>50</strong>).</td></tr>
+<tr><td><code>ytpm items remove PLAYLIST_ITEM_ID</code></td><td>Delete that playlist row (<strong>50</strong>). Video stays on YouTube.</td></tr>
+<tr><td><code>ytpm items rename VIDEO_ID &quot;New title&quot;</code></td><td><code>videos.update</code> on a video <strong>you uploaded</strong> (<strong>1 + 50</strong>). Changes the title everywhere, not only in one playlist.</td></tr>
+</tbody>
+</table>
+</div>
+<h3>Sort, trim, list mode</h3>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Command</th><th>What it does</th></tr>
+</thead>
+<tbody>
+<tr><td><code>ytpm sort PLAYLIST --by title</code></td><td>Sparse sort. <code>--by</code> is <code>title</code>, <code>date</code>, <code>duration</code>, or <code>channel</code>.</td></tr>
+<tr><td><code>ytpm sort PLAYLIST --by title --dry-run</code></td><td>Writes the list-mode file; <strong>0 write quota</strong>.</td></tr>
+<tr><td><code>ytpm sort PLAYLIST --by title --reverse</code></td><td>Reverse the chosen key (Z–A, newest first, longest first, …).</td></tr>
+<tr><td><code>ytpm sort --resume</code></td><td>Continues <code>sort_queue.json</code> after Pacific midnight.</td></tr>
+<tr><td><code>ytpm trim PLAYLIST [PLAYLIST…]</code></td><td>Remove duplicate video ids.</td></tr>
+<tr><td><code>ytpm trim --all</code></td><td>Trim every owned playlist.</td></tr>
+<tr><td><code>ytpm list export</code></td><td>Export <strong>all</strong> playlists to list-mode text.</td></tr>
+<tr><td><code>ytpm list export PLAYLIST [PLAYLIST…]</code></td><td>Export selected playlists only.</td></tr>
+<tr><td><code>ytpm list apply</code></td><td>Apply <code>list_mode/*.txt</code>.</td></tr>
+<tr><td><code>ytpm list apply --dry-run</code></td><td>Print planned deletes/inserts/moves; <strong>0 writes</strong>.</td></tr>
+</tbody>
+</table>
+</div>
+<h3>Export and cleanup</h3>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Command</th><th>What it does</th></tr>
+</thead>
+<tbody>
+<tr><td><code>ytpm export PLAYLIST</code></td><td>JSON snapshot under the export folder (<strong>~2</strong> reads).</td></tr>
+<tr><td><code>ytpm stats PLAYLIST</code></td><td>Duration totals, longest/shortest, unique channels (<strong>~2</strong> reads).</td></tr>
+<tr><td><code>ytpm cleanup PLAYLIST</code></td><td>Find broken (placeholder) rows.</td></tr>
+<tr><td><code>ytpm cleanup PLAYLIST --remove</code></td><td>Delete those playlist rows (<strong>50 × count</strong>). Optional <code>--private</code> / <code>--unlisted</code> to include those statuses in the scan.</td></tr>
+</tbody>
+</table>
+</div>
+<h3>Notes</h3>
+<ul class="notes">
+<li><code>--by</code> for sort: <code>title</code>, <code>date</code>, <code>duration</code>, <code>channel</code>. Add <code>--reverse</code> to invert.</li>
+<li>Dry-run sort/clear/apply still <strong>reads</strong> (list items). They do not spend <strong>write</strong> quota.</li>
+<li>Quota resets at midnight US Pacific. Google does not expose remaining Data API units; YTPM tracks a local ledger.</li>
+<li><code>Run_YTPM_CLI.bat</code> uses <code>YTPM_VENV</code> from <code>.env</code> and installs missing libraries on startup (<code>ensure_deps.py</code>).</li>
+<li>Do not use unofficial YouTube web APIs to dodge quota.</li>
+</ul>
+<p>See the button reference above (<code>docs/gui-buttons.md</code>) for GUI costs.</p>
+<!-- END:CLI -->
+    </section>
+
+    <section id="quota">
+      <h2>Limitations and YouTube API quota</h2>
+      <p>Google does <strong>not</strong> sell extra Data API quota. The default allocation is 10,000 units per project per day. HTTP batching does not reduce unit cost. Extra Google Cloud projects used to multiply the 10k cap violate Google’s API terms. A team that shares one Desktop OAuth client (one Cloud project in the Windows zip) also shares that 10,000-unit pool.</p>
+      <p>You audit the project and ask for more units. Use the official paths below.</p>
+      <div class="links">
+        <a href="https://support.google.com/youtube/contact/yt_api_form" target="_blank" rel="noopener">
+          Form
+          <small>YouTube API Services — Audit and Quota Extension</small>
+        </a>
+        <a href="https://developers.google.com/youtube/v3/guides/quota_and_compliance_audits" target="_blank" rel="noopener">
+          Docs
+          <small>Quota and Compliance Audits</small>
+        </a>
+        <a href="https://console.cloud.google.com/apis/api/youtube.googleapis.com/quotas" target="_blank" rel="noopener">
+          Console
+          <small>YouTube Data API quotas</small>
+        </a>
+      </div>
+      <div class="limit-card">
+        <h3>What YTPM will not do</h3>
+        <ul>
+          <li>It cannot switch a playlist to Manual sort via the public API — that is Studio-only.</li>
+          <li>It cannot update titles on videos you do not own. Rename title… uses <code>videos.update</code> and changes the title everywhere, not only in one playlist.</li>
+          <li>It will not delete-and-rebuild a playlist to force order (that can empty the list if quota dies mid-run).</li>
+          <li>Find Broken ignores playable unlisted videos; only YouTube placeholder titles count as broken.</li>
+          <li>The sidebar quota meter is a local estimate. Google does not expose remaining Data API units.</li>
+          <li>The video cache is in-memory only. Refresh drops it. It is not written to disk.</li>
+          <li>Until a quota increase is approved, plan large sorts across days. Dry-run and List Mode save intended order at zero write cost.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer id="author">
+    <div class="wrap footer-grid">
+      <svg viewBox="0 0 512 512" width="40" height="40" aria-hidden="true">
+        <rect width="512" height="512" rx="92" fill="#1F538D"/>
+        <circle cx="118" cy="168" r="22" fill="#E6F2FF"/>
+        <rect x="156" y="148" width="190" height="40" rx="20" fill="#DCEBFF"/>
+        <circle cx="118" cy="256" r="22" fill="#E6F2FF"/>
+        <rect x="156" y="236" width="190" height="40" rx="20" fill="#DCEBFF"/>
+        <circle cx="118" cy="344" r="22" fill="#E6F2FF"/>
+        <rect x="156" y="324" width="190" height="40" rx="20" fill="#DCEBFF"/>
+        <polygon points="390,168 390,344 478,256" fill="#F4FBFF"/>
+      </svg>
+      <div>
+        Authored by <strong>CN Sharad</strong><br>
+        <strong>Isha Analytiks LLC</strong> ·
+        <a href="https://www.ishaanalytiks.com">https://www.ishaanalytiks.com</a> ·
+        <a href="mailto:info@ishaanalytiks.com">info@ishaanalytiks.com</a>
+      </div>
+      <div>YouTube Playlist Manager (YTPM)<br>© Isha Analytiks LLC</div>
+    </div>
+  </footer>
+</body>
+</html>
